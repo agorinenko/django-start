@@ -30,14 +30,11 @@ REQUIRED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.sitemaps",
     "django.contrib.admindocs",
-    "django_nose",
     "rest_framework",
     "rest_framework.authtoken",
     "channels",
     "drf_yasg"
 ]
-
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 PROJECT_APPS = [
     'web_app'

@@ -3,15 +3,17 @@ version: '3.1'
 services:
 
   db:
+    container_name: django_start_db_1
     image: postgres:12-alpine
     ports: 
       - 5432:5432
-    environment:
-      - POSTGRES_DB=django_database
-      - POSTGRES_USER=django_user
-      - POSTGRES_PASSWORD=django_password
+    env_file:
+      - .env
 
   redis:
+    container_name: django_start_redis_1
     image: redis:alpine
     ports:
       - 6379:6379
+    env_file:
+      - .env

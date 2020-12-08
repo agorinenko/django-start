@@ -6,7 +6,7 @@ from envparse import env
 
 load_dotenv()
 
-ENV_TYPE = env.str('APP_ENV')
+ENV_TYPE = env.str('ENV')
 
 if ENV_TYPE == "DEV":
     print("Warning! Server started in DEVELOPMENT mode. Use APP_ENV variable with values: PROD, TEST, DEV")

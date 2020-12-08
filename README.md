@@ -1,8 +1,8 @@
 # Стартовый шаблон проекта для Django
-Python	    ``3.7``<br/>
-Django	    ``3.0.5``<br/>
-DRF	        ``3.11.0``<br/>
-Channels	``2.4.0``<br/>
+Python	    ``3.7(for psycopg2-binary)``<br/>
+Django	    ``3.1.4``<br/>
+DRF	        ``3.12.2``<br/>
+Channels	``3.0.2``<br/>
 Postgres    ``12``
 ## Первый запуск
 
@@ -15,14 +15,12 @@ cp .env.example .env
 ``` bash
 docker-compose up -d
 ```
-
-### Pip
-Установка зависимостей
-``` bash
-pip install -r requirements.txt
+## Install dev requirements
+```shell script
+pip install -r requirements.dev.txt
 ```
 
-### Добавить лог-файл
+### Добавить лог-папку при необходимости
 ```bash
 mkdir logs
 ```

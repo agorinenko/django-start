@@ -1,23 +1,59 @@
+"""
+Base django settings
+"""
 import os
-from web_app.var_settings._database import *
-from web_app.var_settings._log_config import *
-from web_app.var_settings._rest import *
-from web_app.var_settings._channels import *
-from web_app.var_settings._app_settings import *
-from web_app.var_settings._redis import REDIS_HOST, REDIS_PORT
-from envparse import env
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from envparse import env
+from split_settings.tools import include
+from dotenv import load_dotenv
+
+load_dotenv()
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+include(
+    '_database.py',
+    '_log_config.py',
+    '_cache.py',
+    '_redis.py',
+)
 
 PROJECT_ROOT = BASE_DIR
 
-SECRET_KEY = env.str('SECRET_KEY')
+SECRET_KEY = env.str('SECRET_KEY', default='')
 
-DEBUG = True
+DEBUG = env.bool('DEBUG', default=False)
+ENV_TYPE = env.str('ENV')
+IS_DEV = ENV_TYPE == "DEV"
 
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_AGE = 1200  # 20 мин
+FILE_UPLOAD_MAX_MEMORY_SIZE = env.int('FILE_UPLOAD_MAX_MEMORY_SIZE', default=2621440)  # 2.5 MB
+
+ENV_INTERNAL_IPS = env.str('INTERNAL_IPS', default=None)
+if ENV_INTERNAL_IPS:
+    parts = [v for v in ENV_INTERNAL_IPS.split(",") if v]
+    if parts:
+        INTERNAL_IPS = parts
+else:
+    INTERNAL_IPS = []
+
+SESSION_COOKIE_AGE = env.int('SESSION_COOKIE_AGE', default=1200)  # 20 мин
+SESSION_COOKIE_SECURE = env.bool('SESSION_COOKIE_SECURE', default=False)
+SESSION_COOKIE_SAMESITE = env.str('SESSION_COOKIE_SAMESITE', default='Lax')
+if SESSION_COOKIE_SAMESITE == 'None':
+    SESSION_COOKIE_SAMESITE = None
+
+CSRF_COOKIE_SECURE = env.bool('CSRF_COOKIE_SECURE', default=False)
+CSRF_COOKIE_SAMESITE = env.str('CSRF_COOKIE_SAMESITE', default='Lax')
+if CSRF_COOKIE_SAMESITE == 'None':
+    CSRF_COOKIE_SAMESITE = None
+
+ENV_CSRF_TRUSTED_ORIGINS = env.str('CSRF_TRUSTED_ORIGINS', default=None)
+if ENV_CSRF_TRUSTED_ORIGINS:
+    parts = [v for v in ENV_CSRF_TRUSTED_ORIGINS.split(",") if v]
+    if parts:
+        CSRF_TRUSTED_ORIGINS = parts
+else:
+    CSRF_TRUSTED_ORIGINS = []
 
 # Application definition
 REQUIRED_APPS = [
@@ -30,19 +66,16 @@ REQUIRED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.sitemaps",
     "django.contrib.admindocs",
-    "rest_framework",
-    "rest_framework.authtoken",
-    "channels",
-    "drf_yasg"
 ]
 
 PROJECT_APPS = [
-    'web_app'
+    'web_app',
 ]
 
 INSTALLED_APPS = REQUIRED_APPS + PROJECT_APPS
 
 SITE_ID = 1
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -80,6 +113,10 @@ TEMPLATES = [
         }
     },
 ]
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+)
 
 WSGI_APPLICATION = 'web_app.wsgi.application'
 
@@ -122,7 +159,7 @@ STATICFILES_FINDERS = [
 ]
 
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
+    # os.path.join(BASE_DIR, 'static'),
 )
 
 STATIC_ROOT = os.path.join(BASE_DIR, "public")
@@ -130,18 +167,17 @@ STATIC_URL = "/static/"
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
+FILE_UPLOAD_PERMISSIONS = 0o644
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/1',
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        }
-    }
-}
-
 SESSION_SAVE_EVERY_REQUEST = True
 AUTH_PROFILE_MODULE = 'app'
+
+ENV_ALLOWED_HOSTS = env.str('ALLOWED_HOSTS', default=None)
+if ENV_ALLOWED_HOSTS:
+    parts = [v for v in ENV_ALLOWED_HOSTS.split(",") if v]
+    if parts:
+        ALLOWED_HOSTS = parts
+else:
+    ALLOWED_HOSTS = ["*"]

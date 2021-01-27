@@ -1,45 +1,31 @@
-# Стартовый шаблон проекта для Django
-Python	    ``3.7(for psycopg2-binary)``<br/>
-Django	    ``3.1.4``<br/>
-DRF	        ``3.12.2``<br/>
-Channels	``3.0.2``<br/>
-Postgres    ``12``
-## Первый запуск
-
-### Env
-Создать .env файл
+# Типовой шаблон Django проекта
+## Описание
+* [Административный интерфейс](http://localhost/admin/)
+## Первый запуск и развертывание
+### Настройка переменных окружения
+Создать .env файл на основе ``.env.example``
+### Запуск приложения
+#### В dev режиме
 ``` bash
-cp .env.example .env
+docker-compose -f docker-compose.dev.yml up -d --build --force-recreate
 ```
-### Запуск контейнеров postgres и redis
+#### В prod режиме
 ``` bash
-docker-compose up -d
+docker-compose up -d --build --force-recreate
 ```
-## Install dev requirements
-```shell script
+#### В изолированном режиме
+``` bash
+docker-compose -f docker-compose.self.yml up -d --build --force-recreate
+```
+## Установка зависимостей для dev режима
+``` bash
 pip install -r requirements.dev.txt
 ```
-
-### Добавить лог-папку при необходимости
-```bash
-mkdir logs
-```
-
-### Миграции
-Создание, если нужно
-``` bash
-python manage.py makemigrations
-```
-Накатываем
-``` bash
-python manage.py migrate
-```
-
+## Для работы
 ### Создание администратора
 ``` bash
 python manage.py createsuperuser
 ```
-## Для работы
 ### Миграции
 Создание, если нужно
 ``` bash
@@ -55,20 +41,15 @@ python manage.py showmigrations
 ```
 Откатываем все миграции приложения
 ``` bash
-python manage.py migrate app_name zero
+python manage.py migrate web_app zero
 ```
 или возвращаемся к 0001_initial
 ``` bash
-python manage.py migrate app_name 0001_initial
-```
-Загрузка тестовых данных
-``` bash
-python manage.py loaddata apps/{{app_name}}/data/init_01.json
-python manage.py dumpdata apps.Office --output apps/{{app_name}}/data/init_01.json
+python manage.py migrate web_app 0001_initial
 ```
 Создание пустой миграции
 ``` bash
-python manage.py makemigrations --empty app_name
+python manage.py makemigrations --empty web_app
 ```
 ### Создание приложения
 ``` bash
@@ -76,5 +57,9 @@ python manage.py startapp app_name
 ```
 ### Запуск тестов из консоли
 ``` bash
-python manage.py test --verbosity=3
+pytest --cov=web_app
+```
+### Запуск pylint из консоли
+``` bash
+pylint ./web_app --load-plugins pylint_django --django-settings-module=web_app.settings
 ```

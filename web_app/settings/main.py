@@ -2,6 +2,7 @@
 Base django settings
 """
 import os
+from pathlib import Path
 
 from envparse import env
 from split_settings.tools import include

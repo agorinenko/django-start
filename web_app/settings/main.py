@@ -3,12 +3,18 @@ Base django settings
 """
 import os
 from pathlib import Path
+from typing import Optional, List
 
 from envparse import env
 from split_settings.tools import include
 from dotenv import load_dotenv
 
 load_dotenv()
+
+
+def parse_str_to_list(data: str, default: Optional[list]) -> List[str]:
+    return [v for v in data.split(",") if v] if data else default
+
 
 BASE_DIR = Path(__file__).parents[2]
 
@@ -31,12 +37,7 @@ IS_DEV = ENV_TYPE == "DEV"
 FILE_UPLOAD_MAX_MEMORY_SIZE = env.int('FILE_UPLOAD_MAX_MEMORY_SIZE', default=2621440)  # 2.5 MB
 
 ENV_INTERNAL_IPS = env.str('INTERNAL_IPS', default=None)
-if ENV_INTERNAL_IPS:
-    parts = [v for v in ENV_INTERNAL_IPS.split(",") if v]
-    if parts:
-        INTERNAL_IPS = parts
-else:
-    INTERNAL_IPS = []
+INTERNAL_IPS = parse_str_to_list(ENV_INTERNAL_IPS, default=[])
 
 SESSION_COOKIE_AGE = env.int('SESSION_COOKIE_AGE', default=1200)  # 20 мин
 SESSION_COOKIE_SECURE = env.bool('SESSION_COOKIE_SECURE', default=False)
@@ -50,12 +51,7 @@ if CSRF_COOKIE_SAMESITE == 'None':
     CSRF_COOKIE_SAMESITE = None
 
 ENV_CSRF_TRUSTED_ORIGINS = env.str('CSRF_TRUSTED_ORIGINS', default=None)
-if ENV_CSRF_TRUSTED_ORIGINS:
-    parts = [v for v in ENV_CSRF_TRUSTED_ORIGINS.split(",") if v]
-    if parts:
-        CSRF_TRUSTED_ORIGINS = parts
-else:
-    CSRF_TRUSTED_ORIGINS = []
+CSRF_TRUSTED_ORIGINS = parse_str_to_list(ENV_CSRF_TRUSTED_ORIGINS, default=[])
 
 # Application definition
 REQUIRED_APPS = [
@@ -178,9 +174,4 @@ SESSION_SAVE_EVERY_REQUEST = True
 AUTH_PROFILE_MODULE = 'app'
 
 ENV_ALLOWED_HOSTS = env.str('ALLOWED_HOSTS', default=None)
-if ENV_ALLOWED_HOSTS:
-    parts = [v for v in ENV_ALLOWED_HOSTS.split(",") if v]
-    if parts:
-        ALLOWED_HOSTS = parts
-else:
-    ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = parse_str_to_list(ENV_ALLOWED_HOSTS, default=["*"])

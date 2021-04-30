@@ -17,6 +17,7 @@ include(
     '_log_config.py',
     '_cache.py',
     '_redis.py',
+    '_cors.py'
 )
 
 PROJECT_ROOT = BASE_DIR
@@ -73,11 +74,12 @@ PROJECT_APPS = [
     'web_app',
 ]
 
-INSTALLED_APPS = REQUIRED_APPS + PROJECT_APPS
+INSTALLED_APPS = ['corsheaders'] + REQUIRED_APPS + PROJECT_APPS
 
 SITE_ID = 1
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     "django.middleware.locale.LocaleMiddleware",

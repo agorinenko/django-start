@@ -3,18 +3,14 @@ Base django settings
 """
 import os
 from pathlib import Path
-from typing import Optional, List
 
 from envparse import env
 from split_settings.tools import include
 from dotenv import load_dotenv
 
+from web_app.settings.utils import parse_str_to_list
+
 load_dotenv()
-
-
-def parse_str_to_list(data: str, default: Optional[list]) -> List[str]:
-    return [v for v in data.split(",") if v] if data else default
-
 
 BASE_DIR = Path(__file__).parents[2]
 

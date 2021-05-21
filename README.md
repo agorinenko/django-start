@@ -61,5 +61,5 @@ pytest --cov=web_app
 ```
 ### Запуск pylint из консоли
 ``` bash
-pylint ./web_app --load-plugins pylint_django --django-settings-module=web_app.settings
+pylint ./web_app --load-plugins pylint_django --load-plugins pylint_django.checkers.migrations --django-settings-module=web_app.settings
 ```

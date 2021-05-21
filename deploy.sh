@@ -1,3 +1,3 @@
 #!/bin/bash
 
-git pull origin develop && docker-compose up -d --build --force-recreate
+git pull origin develop && docker-compose -f docker-compose.deploy.yml up -d --build

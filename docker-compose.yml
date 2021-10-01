@@ -3,7 +3,7 @@ version: '3.1'
 services:
   nginx:
     ports:
-      - 80:80
+      - "80:80"
     build:
       context: ./etc/nginx/
       dockerfile: Dockerfile
@@ -18,7 +18,7 @@ services:
 
   web:
     ports:
-      - 8000:8000
+      - "8000:8000"
     build:
       context: .
       dockerfile: Dockerfile

@@ -19,7 +19,8 @@ include(
     '_log_config.py',
     '_cache.py',
     '_redis.py',
-    '_cors.py'
+    '_cors.py',
+    '_rest.py',
 )
 
 PROJECT_ROOT = BASE_DIR
@@ -32,8 +33,7 @@ IS_DEV = ENV_TYPE == "DEV"
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = env.int('FILE_UPLOAD_MAX_MEMORY_SIZE', default=2621440)  # 2.5 MB
 
-ENV_INTERNAL_IPS = env.str('INTERNAL_IPS', default=None)
-INTERNAL_IPS = parse_str_to_list(ENV_INTERNAL_IPS, default=[])
+INTERNAL_IPS = parse_str_to_list('INTERNAL_IPS', default=[])
 
 SESSION_COOKIE_AGE = env.int('SESSION_COOKIE_AGE', default=1200)  # 20 мин
 SESSION_COOKIE_SECURE = env.bool('SESSION_COOKIE_SECURE', default=False)
@@ -46,8 +46,7 @@ CSRF_COOKIE_SAMESITE = env.str('CSRF_COOKIE_SAMESITE', default='Lax')
 if CSRF_COOKIE_SAMESITE == 'None':
     CSRF_COOKIE_SAMESITE = None
 
-ENV_CSRF_TRUSTED_ORIGINS = env.str('CSRF_TRUSTED_ORIGINS', default=None)
-CSRF_TRUSTED_ORIGINS = parse_str_to_list(ENV_CSRF_TRUSTED_ORIGINS, default=[])
+CSRF_TRUSTED_ORIGINS = parse_str_to_list('CSRF_TRUSTED_ORIGINS', default=[])
 
 # Application definition
 REQUIRED_APPS = [
@@ -60,6 +59,8 @@ REQUIRED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.sitemaps",
     "django.contrib.admindocs",
+    "rest_framework",
+    "drf_yasg",
 ]
 
 PROJECT_APPS = [
@@ -169,5 +170,5 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_SAVE_EVERY_REQUEST = True
 AUTH_PROFILE_MODULE = 'app'
 
-ENV_ALLOWED_HOSTS = env.str('ALLOWED_HOSTS', default=None)
-ALLOWED_HOSTS = parse_str_to_list(ENV_ALLOWED_HOSTS, default=["*"])
+ALLOWED_HOSTS = parse_str_to_list('ALLOWED_HOSTS', default=["*"])
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

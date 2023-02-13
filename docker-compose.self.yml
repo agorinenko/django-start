@@ -28,6 +28,9 @@ services:
         - PIP_TRUSTED_HOST
     env_file:
       - .env
+    environment:
+      - DB_HOST=db
+      - REDIS_HOST=redis
     depends_on:
       - db
       - redis

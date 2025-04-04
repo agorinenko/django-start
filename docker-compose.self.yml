@@ -54,6 +54,43 @@ services:
     env_file:
       - .env
 
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile.celery
+      args:
+        - DOCKER_REGISTRY
+        - PIP_INDEX_URL
+        - PIP_TRUSTED_HOST
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=db
+      - REDIS_HOST=redis
+      - LOG_DIR=/var/log/web_app
+    depends_on:
+      - db
+      - redis
+    command: [ "celery" ]
+
+  beat:
+    build:
+      context: .
+      dockerfile: Dockerfile.celery
+      args:
+        - DOCKER_REGISTRY
+        - PIP_INDEX_URL
+        - PIP_TRUSTED_HOST
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=db
+      - REDIS_HOST=redis
+      - LOG_DIR=/var/log/web_app
+    depends_on:
+      - celery
+    command: [ "beat" ]
+
 volumes:
   static_store:
   pg_store:

@@ -5,8 +5,10 @@ pylint-django
 
 pytest
 pytest-django
+pytest-asyncio
 
 coverage
 pytest-cov
 pytest-aiohttp
 pytest-mock
+pytest-env

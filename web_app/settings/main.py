@@ -21,6 +21,7 @@ include(
     '_redis.py',
     '_cors.py',
     '_rest.py',
+    '_celery.py',
 )
 
 PROJECT_ROOT = BASE_DIR
@@ -28,8 +29,7 @@ PROJECT_ROOT = BASE_DIR
 SECRET_KEY = env.str('SECRET_KEY', default='')
 
 DEBUG = env.bool('DEBUG', default=False)
-ENV_TYPE = env.str('ENV')
-IS_DEV = ENV_TYPE == "DEV"
+ENV_TYPE = env.str('ENV', default='DEV')
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = env.int('FILE_UPLOAD_MAX_MEMORY_SIZE', default=2621440)  # 2.5 MB
 
@@ -60,6 +60,7 @@ REQUIRED_APPS = [
     "django.contrib.sitemaps",
     "django.contrib.admindocs",
     "rest_framework",
+    "django_celery_beat",
     "drf_yasg",
 ]
 

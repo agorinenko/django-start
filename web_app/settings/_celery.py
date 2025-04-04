@@ -1,0 +1,18 @@
+from envparse import env
+
+from web_app.settings._redis import REDIS_CONNECTION_STRING
+
+CELERY_BROKER_URL = REDIS_CONNECTION_STRING
+CELERY_HIJACK_ROOT_LOGGER = False
+CELERY_EAGER = env.bool('CELERY_EAGER', default=False)
+VISIBILITY_TIMEOUT_IN_SEC = env.int('VISIBILITY_TIMEOUT_IN_SEC', default=3600)
+BROKER_POOL_LIMIT = env.int('BROKER_POOL_LIMIT', default=10)
+TASK_ACKS_LATE = env.bool('TASK_ACKS_LATE', default=False)
+TASK_REJECT_ON_WORKER_LOST = env.bool('TASK_REJECT_ON_WORKER_LOST', default=False)
+TASK_ACKS_ON_FAILURE = env.bool('TASK_ACKS_ON_FAILURE', default=True)
+CELERY_CONCURRENCY = env.int('CELERY_CONCURRENCY', default=5)
+WORKER_PREFETCH_MULTIPLIER = env.int('WORKER_PREFETCH_MULTIPLIER', default=4)
+KEY_PREFIX = env.str('web_app0', default='tgs')
+CELERY_BEAT_SCHEDULE = {
+
+}

@@ -3,12 +3,26 @@ from pathlib import Path
 
 from envparse import env
 
-LOG_LEVEL = env.str('LOGGING_DEFAULT_LEVEL')
-LOGGING_DEFAULT_HANDLER = env.str('LOGGING_DEFAULT_HANDLER', default='console')
-ENV_TYPE = env.str('ENV')
+from web_app.settings import parse_str_to_list
 
-LOG_DIR = os.path.join(Path(__file__).parents[2], "log")
+LOG_LEVEL = env.str('LOGGING_DEFAULT_LEVEL', default='DEBUG')
+LOGGING_DEFAULT_HANDLER = parse_str_to_list('LOGGING_DEFAULT_HANDLER', default=['console'])
+ENV_TYPE = env.str('ENV', default='DEV')
+
+LOG_DIR = os.path.join(Path(__file__).parents[2], 'log')
 Path(LOG_DIR).mkdir(parents=True, exist_ok=True)
+
+log_sql = env.bool('LOG_SQL', default=False)
+if log_sql:
+    django_db_log_cfg = {
+        'handlers': ['sql_console'],
+        'level': 'DEBUG',
+    }
+else:
+    django_db_log_cfg = {
+        'handlers': ['null'],
+        'level': 'WARNING'
+    }
 
 LOGGING = {
     'version': 1,
@@ -22,13 +36,15 @@ LOGGING = {
         }
     },
     'formatters': {
+        'sql': {
+            'format': '[SQL] %(duration).3f sec | %(sql)s',
+        },
         'default': {
             'format': '%(levelname)s %(name)s %(asctime)s %(module)s %(message)s',
         }
     },
     'handlers': {
         'file': {
-            'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
             'maxBytes': 1024 * 1024 * 5,  # 5 MB
             'backupCount': 7,
@@ -36,29 +52,37 @@ LOGGING = {
             'formatter': 'default',
         },
         'console': {
-            'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'default'
         },
+        'sql_console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'sql'
+        },
         'null': {
-            "class": 'logging.NullHandler',
+            'class': 'logging.NullHandler',
         }
     },
     'loggers': {
         'django.request': {
-            'level': 'DEBUG',
+            'handlers': LOGGING_DEFAULT_HANDLER,
+            'level': LOG_LEVEL,
         },
         'django': {
-            'handlers': ['null', ],
+            'handlers': LOGGING_DEFAULT_HANDLER,
+            'level': LOG_LEVEL,
         },
         'py.warnings': {
-            'handlers': ['null', ],
+            'handlers': LOGGING_DEFAULT_HANDLER,
+            'level': 'WARNING',
         },
-        'django.db.backends': {
-            'level': 'DEBUG',
+        'django.utils.autoreload': {
+            'level': 'WARNING',
+            'handlers': LOGGING_DEFAULT_HANDLER,
         },
+        'django.db.backends': django_db_log_cfg,
         '': {
-            'handlers': [LOGGING_DEFAULT_HANDLER],
+            'handlers': LOGGING_DEFAULT_HANDLER,
             'level': LOG_LEVEL,
         }
     }

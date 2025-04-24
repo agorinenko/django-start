@@ -3,10 +3,10 @@ from pathlib import Path
 
 from envparse import env
 
-from web_app.settings import parse_str_to_list
+from web_app.settings import utils
 
 LOG_LEVEL = env.str('LOGGING_DEFAULT_LEVEL', default='DEBUG')
-LOGGING_DEFAULT_HANDLER = parse_str_to_list('LOGGING_DEFAULT_HANDLER', default=['console'])
+LOGGING_DEFAULT_HANDLER = utils.parse_str_to_list('LOGGING_DEFAULT_HANDLER', default=['console'])
 ENV_TYPE = env.str('ENV', default='DEV')
 
 LOG_DIR = os.path.join(Path(__file__).parents[2], 'log')

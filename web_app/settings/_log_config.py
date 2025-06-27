@@ -3,10 +3,10 @@ from pathlib import Path
 
 from envparse import env
 
-from web_app.settings import utils
+from web_app.settings.utils import parse_str_to_list
 
 LOG_LEVEL = env.str('LOGGING_DEFAULT_LEVEL', default='DEBUG')
-LOGGING_DEFAULT_HANDLER = utils.parse_str_to_list('LOGGING_DEFAULT_HANDLER', default=['console'])
+LOGGING_DEFAULT_HANDLER = parse_str_to_list('LOGGING_DEFAULT_HANDLER', default=['console'])
 ENV_TYPE = env.str('ENV', default='DEV')
 
 LOG_DIR = os.path.join(Path(__file__).parents[2], 'log')
@@ -17,6 +17,7 @@ if log_sql:
     django_db_log_cfg = {
         'handlers': ['sql_console'],
         'level': 'DEBUG',
+        'propagate': False,
     }
 else:
     django_db_log_cfg = {
@@ -67,18 +68,22 @@ LOGGING = {
         'django.request': {
             'handlers': LOGGING_DEFAULT_HANDLER,
             'level': LOG_LEVEL,
+            'propagate': False,
         },
         'django': {
             'handlers': LOGGING_DEFAULT_HANDLER,
             'level': LOG_LEVEL,
+            'propagate': False,
         },
         'py.warnings': {
             'handlers': LOGGING_DEFAULT_HANDLER,
             'level': 'WARNING',
+            'propagate': False,
         },
         'django.utils.autoreload': {
-            'level': 'WARNING',
+            'level': 'WARNING',  # или 'ERROR' или 'CRITICAL'
             'handlers': LOGGING_DEFAULT_HANDLER,
+            # 'propagate': False,
         },
         'django.db.backends': django_db_log_cfg,
         '': {

@@ -39,7 +39,7 @@ services:
       - static_store:/opt/app/public
 
   db:
-    image: ${DOCKER_REGISTRY}/postgres
+    image: ${DOCKER_REGISTRY}/postgres:17.5-bookworm
     ports:
       - "5432:5432"
     env_file:
@@ -48,7 +48,7 @@ services:
       - pg_store:/var/lib/postgresql/data
 
   redis:
-    image: ${DOCKER_REGISTRY}/redis
+    image: ${DOCKER_REGISTRY}/redis:8.0.2-bookworm
     ports:
       - "6379:6379"
     env_file:

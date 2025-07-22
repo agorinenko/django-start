@@ -12,7 +12,7 @@ TASK_REJECT_ON_WORKER_LOST = env.bool('TASK_REJECT_ON_WORKER_LOST', default=Fals
 TASK_ACKS_ON_FAILURE = env.bool('TASK_ACKS_ON_FAILURE', default=True)
 CELERY_CONCURRENCY = env.int('CELERY_CONCURRENCY', default=5)
 WORKER_PREFETCH_MULTIPLIER = env.int('WORKER_PREFETCH_MULTIPLIER', default=4)
-KEY_PREFIX = env.str('web_app0', default='tgs')
+KEY_PREFIX = env.str('KEY_PREFIX', default='web_app0')
 CELERY_BEAT_SCHEDULE = {
 
 }

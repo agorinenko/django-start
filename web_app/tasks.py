@@ -1,52 +1,22 @@
 import logging
-import pprint
-from collections.abc import Callable
+from celery_misc import celery_utils
 
-from billiard.exceptions import SoftTimeLimitExceeded
-
-from django import db
-from django.conf import settings
+from web_app.celery import app
 
 logger = logging.getLogger(__name__)
 
 
-def _common_task(task, task_function: Callable, *args, cleanup_function: Callable | None = None, **kwargs):
-    if args and args[0] is None:
-        args = list(args)
-        args.pop(0)
-
-    logger.debug("================ START TASK %s ================\nargs: %s\nkwargs: %s", task.name,
-                 pprint.pformat(args), pprint.pformat(kwargs))
-    if not settings.CELERY_EAGER:
-        _check_connections()
-    try:
-
-        return task_function(*args, **kwargs)
-    except SoftTimeLimitExceeded:
-        logger.info('Soft time limit exceeded in %s.', task.name)
-        if cleanup_function:
-            cleanup_function()
-
-        return {
-            'exception': 'soft_time_limit_exceeded'
-        }
-    except Exception as ex:  # pylint: disable=broad-except
-        logger.exception(ex)
-
-        return {
-            'exception': str(ex)
-        }
-    finally:
-        if not settings.CELERY_EAGER:
-            db.close_old_connections()
-        logger.debug("================ END TASK %s ================", task.name)
+@app.task(bind=True, max_retries=5, retry_backoff=3, retry_backoff_max=600, retry_jitter=True)
+def send_events_only_ones(self, *args, **kwargs):
+    """ Однократная отсылка созданных событий """
+    return celery_utils.common_celery_task(self, _send_events, *args, **kwargs)
 
 
-def _check_connections():
-    """ Проверка соединений с Django """
-    for conn in db.connections.all():
-        try:
-            cur = conn.cursor()
-            _ = cur.execute('SELECT pg_backend_pid()')
-        except (db.OperationalError, db.InterfaceError):
-            conn.close()
+@app.task(bind=True)
+def send_events(self, *args, **kwargs):
+    """ Периодическая отсылка не отправленных сообщений """
+    return celery_utils.safety_celery_task(self, _send_events, *args, suppress_events_error=True, **kwargs)
+
+
+def _send_events(_, *args, **kwargs):
+    pass

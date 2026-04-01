@@ -10,6 +10,10 @@ class WebAppConfig(AppConfig):
 
     def ready(self):
         try:
-            from web_app import tasks, signals
+            super().ready()
+            from web_app import tasks
+            from web_app.signals import signals_connect
+
+            signals_connect()
         except ImportError:
             pass

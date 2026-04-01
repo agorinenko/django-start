@@ -65,6 +65,17 @@ LOGGING = {
         }
     },
     'loggers': {
+        'django.db.backends': django_db_log_cfg,
+        '': {
+            'handlers': LOGGING_DEFAULT_HANDLER,
+            'level': LOG_LEVEL,
+            'propagate': False,
+        },
+        'django.template': {
+            'handlers': LOGGING_DEFAULT_HANDLER,
+            'level': 'WARNING',
+            'propagate': False,
+        },
         'django.request': {
             'handlers': LOGGING_DEFAULT_HANDLER,
             'level': LOG_LEVEL,
@@ -84,11 +95,6 @@ LOGGING = {
             'level': 'WARNING',  # или 'ERROR' или 'CRITICAL'
             'handlers': LOGGING_DEFAULT_HANDLER,
             # 'propagate': False,
-        },
-        'django.db.backends': django_db_log_cfg,
-        '': {
-            'handlers': LOGGING_DEFAULT_HANDLER,
-            'level': LOG_LEVEL,
         }
     }
 }

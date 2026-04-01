@@ -2,17 +2,22 @@ import os
 
 from celery import Celery
 from django.conf import settings
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'web_app.settings')
 
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'web_app.settings')
 
 app = Celery('web_app', broker=settings.CELERY_BROKER_URL)
 app.config_from_object(settings, namespace='CELERY')
 app.autodiscover_tasks()
 
-
 transport_options = {
     'visibility_timeout': settings.VISIBILITY_TIMEOUT_IN_SEC,
-    'global_keyprefix': settings.KEY_PREFIX
+    'global_keyprefix': settings.KEY_PREFIX,
+    'retry_on_timeout': True,
+    'socket_keepalive': True,
+    'socket_timeout': 10,
+    'socket_connect_timeout': 30,
+    'health_check_interval': 15,
+    'max_connections': settings.BROKER_POOL_LIMIT,
 }
 
 app.conf.update(
@@ -30,5 +35,9 @@ app.conf.update(
     worker_state_db=str(settings.BASE_DIR / 'celery-state'),
     worker_concurrency=settings.CELERY_CONCURRENCY,
     worker_prefetch_multiplier=settings.WORKER_PREFETCH_MULTIPLIER,
-    broker_connection_retry_on_startup=True
+    broker_connection_retry_on_startup=True,
+    broker_connection_retry=True,
+    broker_connection_max_retries=None,
+    broker_connection_timeout=10,
+    broker_heartbeat=60
 )
